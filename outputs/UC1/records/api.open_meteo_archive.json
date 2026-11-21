@@ -1,0 +1,125 @@
+{
+  "source_id": "api.open_meteo_archive",
+  "kind": "public_api",
+  "title": "Open-Meteo Historical Weather API (reanalysis)",
+  "summary": "ERA5/ERA5-Land reanalysis data accessed via the Open-Meteo Historical Weather API. Provides hourly temperature_2m and relative_humidity_2m (and many other variables) from 1940 to near-present at the grid cell covering the requested coordinates. Probes at Milan-area coordinates (45.46, 9.19) returned valid hourly data for both the prototype window (March 2004) and the production window (Dec 2024/Jan 2025). The API is approved for both prototyping and production use, and data is offered under CC BY 4.0. Spatial resolution is ~11 km (ERA5-Land 0.1°) to ~31 km (ERA5 0.25°), which may miss local microclimatic effects.",
+  "schema": {
+    "documented": "structured",
+    "fields": [
+      {
+        "name": "time",
+        "type": "string",
+        "unit": "iso8601",
+        "description": "Hourly timestamps in ISO 8601 format, timezone-aware"
+      },
+      {
+        "name": "temperature_2m",
+        "type": "float",
+        "unit": "°C",
+        "description": "Air temperature at 2 metres above ground"
+      },
+      {
+        "name": "relative_humidity_2m",
+        "type": "float",
+        "unit": "%",
+        "description": "Relative humidity at 2 metres above ground"
+      }
+    ],
+    "field_count": 3,
+    "notes": "Many additional hourly variables are available (dewpoint, precipitation, pressure, wind, cloud cover, etc.) but only temperature_2m and relative_humidity_2m were probed per the need. The API documentation lists all variables at open-meteo.com/en/docs/historical-weather-api"
+  },
+  "temporal": {
+    "start": "1940-01-01",
+    "end": null,
+    "open_ended": true,
+    "grain": "hourly",
+    "refresh_cadence": "unknown",
+    "metadata_last_updated": null
+  },
+  "spatial": {
+    "coverage": [
+      "IT"
+    ],
+    "code_system": "latitude/longitude (decimal degrees, WGS84)",
+    "notes": "The API accepts any lat/lon globally. Probes used 45.46, 9.19 (Milan area, northern Italy). The actual grid cell returned was at 45.448154, 9.169279 (nearest ERA5-Land cell). Users must specify the desired coordinates; defaults are Lisbon (38.72, -9.14)."
+  },
+  "ownership": {
+    "owner": "Open-Meteo.com (P. Zippenfenig)",
+    "steward": null,
+    "publisher": "Open-Meteo.com"
+  },
+  "licence": {
+    "name": "CC BY 4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/",
+    "commercial_use": "yes",
+    "mixed_sources": true,
+    "attribution_text": "Appropriate credit must be given, a link to the licence provided, and changes indicated. A link to Open-Meteo must appear next to any displayed data: <a href='https://open-meteo.com/'>Weather data by Open-Meteo.com</a>",
+    "agreement_status": "not_required_open_data",
+    "evidence": "Open-Meteo licence page at https://open-meteo.com/en/licence states: 'API data are offered under Attribution 4.0 International (CC BY 4.0)'. The page also lists upstream data sources with their own CC-BY, CC-BY-SA, or other licences (DWD, ECMWF, NOAA, CMC, Météo-France, JMA, etc.), hence mixed_sources = true."
+  },
+  "access": {
+    "method": "rest_api",
+    "auth_required": false,
+    "request_process": null,
+    "reachable": true,
+    "approx_size_bytes": null,
+    "classification": null
+  },
+  "declared_metadata": {
+    "licence": "CC BY 4.0",
+    "upstream_sources": "ERA5 (C3S/ECMWF), ERA5-Land, ECMWF IFS, plus multiple national weather services",
+    "coverage_from_docs": "1940 to present (ERA5 from 1940, ERA5-Land from 1950, IFS 9km from 2017)"
+  },
+  "documentation_excerpts": [
+    "Gap-free and consistent historical weather data using weather reanalysis from ERA5 (0.25°, from 1940) and ERA5-Land (0.1°, from 1950) and ECMWF IFS (9 km, from 2017).",
+    "API data are offered under Attribution 4.0 International (CC BY 4.0)",
+    "Attribution: You must give appropriate credit, provide a link to the licence, and indicate if changes were made."
+  ],
+  "quality_notes": [
+    "ERA5 reanalysis has ~9-31 km spatial resolution (ERA5-Land ~11 km, ERA5 ~31 km, IFS from 2017 ~9 km) — may miss local microclimatic effects in the Po Valley or urban heat island effects.",
+    "Historical data may have 5-30 day latency (not verified by probe; the API docs do not state a specific latency).",
+    "The API defaults to Lisbon (38.72, -9.14) — the coordinates MUST be set to the northern Italy area for this use case.",
+    "The grid cell returned (45.448154, 9.169279) is the nearest ERA5-Land cell to the requested (45.46, 9.19); not a point measurement.",
+    "Mixed upstream licences: the CC BY 4.0 applies to the API output, but the underlying data sources have varying licences (CC-BY, CC-BY-SA, and some have unspecified 'Licence' terms)."
+  ],
+  "provenance": [
+    {
+      "claim": "The API is approved for prototyping AND production use for UC1",
+      "evidence": "list_external_register — api.open_meteo_archive has approved_purposes: ['prototyping', 'production']"
+    },
+    {
+      "claim": "Hourly temperature_2m and relative_humidity_2m are available for the prototype window (March 2004)",
+      "evidence": "call_public_api with start_date=2004-03-10, end_date=2004-03-12 returned 72 hourly records with valid temperature_2m and relative_humidity_2m values"
+    },
+    {
+      "claim": "Hourly temperature_2m and relative_humidity_2m are available for the production window (Dec 2024/Jan 2025)",
+      "evidence": "call_public_api with start_date=2024-12-30, end_date=2025-01-02 returned 96 hourly records with valid temperature_2m and relative_humidity_2m values"
+    },
+    {
+      "claim": "The licence is CC BY 4.0",
+      "evidence": "probe_url on https://open-meteo.com/en/licence — text: 'API data are offered under Attribution 4.0 International (CC BY 4.0)'"
+    },
+    {
+      "claim": "Data coverage from 1940 to present",
+      "evidence": "probe_url on https://open-meteo.com/en/docs/historical-weather-api — text: 'Gap-free and consistent historical weather data using weather reanalysis from ERA5 (0.25°, from 1940)'"
+    },
+    {
+      "claim": "Upstream data sources have mixed licences (CC-BY, CC-BY-SA, and other terms)",
+      "evidence": "probe_url on https://open-meteo.com/en/licence lists DWD (CC-BY), ECMWF (CC-BY), UK Met Office (CC-BY-SA), etc."
+    }
+  ],
+  "unknowns": [
+    "Exact refresh/update cadence for historical data (not stated in documentation)",
+    "Metadata last-updated date for the API dataset (not exposed)",
+    "Exact latency between real-time and availability in the archive (docs mention 'historical data back to 1940' but no latency figure)",
+    "Approximate size of responses (not meaningful for API queries; depends on date range and variable count)"
+  ],
+  "canonical_ref": "api.open_meteo_archive",
+  "sample_findings": [
+    "temperature_2m (float, °C): prototype sample range -1.0 to -0.6; production sample range -0.4 to 0.9 — plausible winter values for northern Italy",
+    "relative_humidity_2m (float, %): prototype sample range 83-86; production sample range 87-90 — plausible winter values",
+    "time (string, iso8601): hourly timestamps in Europe/Rome timezone, format YYYY-MM-DDTHH:MM",
+    "No sentinel values, nulls, or negative values observed in the samples (72 and 96 rows respectively)",
+    "The API resolves the requested coordinates to the nearest grid cell centre (45.448154, 9.169279)"
+  ]
+}

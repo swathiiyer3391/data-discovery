@@ -1,0 +1,121 @@
+{
+  "source_id": "internal.store.calendar",
+  "kind": "internal",
+  "title": "Shop calendar (opening days & local events)",
+  "summary": "Daily shop calendar covering 2022-01-01 to present (still updating), with one row per day. Records whether the shop was open (is_open boolean) and any local event taking place (event_name free-text string). Matches need N5 (shop opening days and local events) at daily grain. Refresh cadence is weekly — most recent week may be stale by a few days. Event descriptions are self-reported by the shop and may be incomplete (not systematically sourced from all municipalities).",
+  "schema": {
+    "documented": "structured",
+    "fields": [
+      {
+        "name": "calendar_date",
+        "type": "date",
+        "description": "Day",
+        "pii": false
+      },
+      {
+        "name": "is_open",
+        "type": "boolean",
+        "description": "Whether the shop was open",
+        "pii": false
+      },
+      {
+        "name": "event_name",
+        "type": "string",
+        "description": "Local event that day, if any",
+        "pii": false
+      }
+    ],
+    "field_count": 3,
+    "notes": "event_name is free-text; only populated when a local event occurs that day. No controlled vocabulary for event types."
+  },
+  "temporal": {
+    "start": "2022-01-01",
+    "end": null,
+    "open_ended": true,
+    "grain": "daily",
+    "refresh_cadence": "weekly",
+    "metadata_last_updated": "2026-10-14"
+  },
+  "spatial": {
+    "coverage": [
+      "IT"
+    ],
+    "code_system": null,
+    "notes": "Single shop location in Italy (Valdena Gelato). No explicit geography column; the shop location is implicit."
+  },
+  "ownership": {
+    "owner": "Store Operations",
+    "steward": "Elena Russo",
+    "publisher": "Store Operations"
+  },
+  "licence": {
+    "name": "internal",
+    "url": null,
+    "commercial_use": "not_applicable",
+    "mixed_sources": false,
+    "attribution_text": null,
+    "agreement_status": "internal_data",
+    "evidence": "Catalog entry classification=internal, contains_pii=false"
+  },
+  "access": {
+    "method": "warehouse_sql",
+    "auth_required": false,
+    "request_process": "Open to analytics roles",
+    "reachable": true,
+    "approx_size_bytes": null,
+    "classification": "internal"
+  },
+  "declared_metadata": {
+    "has_missing_values": "unknown",
+    "contains_pii": false,
+    "row_count_approx": 1500
+  },
+  "documentation_excerpts": [
+    "Opening days, closures and local events for the shop. — catalog description",
+    "columns: calendar_date (date, 'Day'), is_open (boolean, 'Whether the shop was open'), event_name (string, 'Local event that day, if any') — catalog schema"
+  ],
+  "quality_notes": [
+    "Refresh cadence is weekly; last refreshed 2026-10-10, which may be up to 5 days stale relative to as_of date 2026-10-15.",
+    "Local events are self-reported by shop staff — coverage may be incomplete and descriptions are free-text (no controlled vocabulary).",
+    "The till system migration (2024-02-05 to 2024-03-10) affected sales recording but the calendar table should still reflect opening status for those days.",
+    "No wiki documentation specific to this table was found — no backlinks from other catalog entries or wiki pages.",
+    "No spatial column exists; shop location is implicit (single Valdena Gelato shop in Italy)."
+  ],
+  "provenance": [
+    {
+      "claim": "Table has 3 columns: calendar_date (date), is_open (boolean), event_name (string)",
+      "evidence": "get_catalog_entry('internal.store.calendar') → columns"
+    },
+    {
+      "claim": "Coverage starts 2022-01-01 and is open-ended (still updating)",
+      "evidence": "get_catalog_entry('internal.store.calendar') → temporal_coverage"
+    },
+    {
+      "claim": "Refresh cadence is weekly, last refreshed 2026-10-10",
+      "evidence": "get_catalog_entry('internal.store.calendar') → refresh_cadence, last_refreshed"
+    },
+    {
+      "claim": "Owner is Store Operations, steward is Elena Russo",
+      "evidence": "get_catalog_entry('internal.store.calendar') → owner, steward"
+    },
+    {
+      "claim": "Grain is daily, ~1500 rows",
+      "evidence": "get_catalog_entry('internal.store.calendar') → grain, row_count_approx"
+    },
+    {
+      "claim": "No wiki documentation backlinks found",
+      "evidence": "get_catalog_entry('internal.store.calendar') → wiki_backlinks (empty); search_internal_catalog('store calendar opening days local events') returned no wiki page for this table"
+    },
+    {
+      "claim": "No sales were recorded during till migration 2024-02-05 to 2024-03-10; calendar should still reflect openings",
+      "evidence": "read_wiki_page('till_migration_2024') — till system replacement period"
+    }
+  ],
+  "unknowns": [
+    "Exact row count beyond '~1500' is unknown (catalog estimate only).",
+    "Whether event_name uses any controlled vocabulary or standard event categories (e.g. festival, market, parade) is undocumented.",
+    "Coverage completeness of local events — no documented sourcing methodology or reconciliation with official municipal calendars.",
+    "Classification of data (internal) is stated but no specific data sensitivity tier is documented.",
+    "Exact table size in bytes is unknown."
+  ]
+}

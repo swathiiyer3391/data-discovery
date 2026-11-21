@@ -1,0 +1,46 @@
+{
+  "reviewer": "Swathi Iyer",
+  "verdict": "proceed_with_conditions",
+  "conditions": [
+    {
+      "text": "Confirm data access approvals with Environment Monitoring Unit (internal.airq.station_readings), Mobility Office (internal.traffic.hourly_counts), and Clinical Analytics (internal.clinic.resp_visits_daily).",
+      "owner": "Valdena Civic Health Project Lead",
+      "due": "2026-11-30"
+    },
+    {
+      "text": "Obtain station-location coordinates and traffic counter asset register to perform spatial joins, and implement adjustment for the 2024-03-18 traffic counter direction change and 2024-06-30 VR-03 station shutdown.",
+      "owner": "Data Science & Mobility/Environment Stewards",
+      "due": "2026-12-05"
+    },
+    {
+      "text": "Complete legal review of link.uci_360 licence ambiguity (CC BY 4.0 vs prose research-only note) and api.open_meteo_archive upstream licences, and implement -200 sentinel replacement with NULL in prototype code.",
+      "owner": "Legal Team & Data Scientist",
+      "due": "2026-12-05"
+    }
+  ],
+  "agreements": [
+    {
+      "source_id": "internal.clinic.patient_visits",
+      "reason": "Agree with not_feasible verdict: DPO policy explicitly prohibits patient-level records containing PII (patient_key, age_band, postcode), and internal.clinic.resp_visits_daily is the approved aggregated alternative."
+    },
+    {
+      "source_id": "link.uci_360",
+      "reason": "Agree with feasible_with_conditions for prototype use only (dismissing FRS-STALE per calibration rule 4) while requiring -200 sentinel handling and legal review of the research-only note."
+    },
+    {
+      "source_id": "link.data_open_air_chicago_hour_aggre_d4970b",
+      "reason": "Agree with not_feasible: catalog.data.gov is outside the exact-host allowlist (ACC-UNREACHABLE), licence is unknown, and Chicago geography mismatches Valdena, Italy."
+    }
+  ],
+  "overrides": [
+    {
+      "source_id": "link.uci_360",
+      "reason": "Minor factual correction to memo prose: Section 3 states March 2004 - February 2005, whereas the profiled dataset extends through 2005-04-04 (April 2005), covering the full prototype window."
+    }
+  ],
+  "traced_conclusion": {
+    "source_id": "internal.airq.station_readings",
+    "record_field": "temporal.start",
+    "could_change_if": "If internal.airq.station_readings actually started in 2004 instead of 2023-01-01 (or if Environment Monitoring Unit denies access or confirms additional stations beyond VR-03 were offline in 2024-2025), N1 would either not need the UCI prototype proxy or would fail production coverage."
+  }
+}

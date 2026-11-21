@@ -1,0 +1,122 @@
+{
+  "source_id": "internal.sales.daily_by_product",
+  "kind": "internal",
+  "title": "Daily sales by product",
+  "status": "active",
+  "summary": "Daily units sold and revenue in euros per product per day, extracted from the till system. Covers 2022-01-01 to present (daily refresh). Contains ~64 products and ~310k rows. A till migration gap from 2024-02-05 to 2024-03-10 means no rows exist for those days (not zero sales). Product codes changed on 2024-04-01 (codes ending in L replaced), with no mapping table between old and new codes — matching can only be done via product name, which is not always unique. The product list (sales.products) only contains current codes. This source matches need N1 (daily ice-cream sales by product) for both windows.",
+  "schema": {
+    "documented": "structured",
+    "fields": [
+      {
+        "name": "sale_date",
+        "type": "date",
+        "description": "Day of sale",
+        "pii": false
+      },
+      {
+        "name": "product_code",
+        "type": "string",
+        "description": "Product code, see the product list. Codes changed 2024-04-01; codes ending in L were replaced. No mapping exists.",
+        "pii": false
+      },
+      {
+        "name": "units_sold",
+        "type": "integer",
+        "description": "Units sold that day",
+        "pii": false
+      },
+      {
+        "name": "revenue_eur",
+        "type": "numeric",
+        "description": "Revenue in euros that day",
+        "pii": false
+      }
+    ],
+    "field_count": 4
+  },
+  "temporal": {
+    "start": "2022-01-01",
+    "end": null,
+    "open_ended": true,
+    "grain": "daily",
+    "refresh_cadence": "daily",
+    "metadata_last_updated": "2026-10-14"
+  },
+  "spatial": {
+    "coverage": [
+      "IT"
+    ],
+    "code_system": null,
+    "notes": "Location is not a column in this table; the Valdena Gelato Shop operates in northern Italy (IT). No explicit geography column."
+  },
+  "ownership": {
+    "owner": "Retail Operations",
+    "steward": "Marco Bianchi",
+    "publisher": null
+  },
+  "licence": {
+    "name": "internal",
+    "url": null,
+    "commercial_use": "not_applicable",
+    "mixed_sources": false,
+    "attribution_text": null,
+    "agreement_status": null,
+    "evidence": "catalog entry for internal.sales.daily_by_product — internal sources have licence.name='internal' and commercial_use='not_applicable' by convention"
+  },
+  "access": {
+    "method": "warehouse_sql",
+    "auth_required": true,
+    "request_process": "Request to Retail Operations",
+    "reachable": true,
+    "approx_size_bytes": null,
+    "classification": "confidential"
+  },
+  "declared_metadata": {
+    "contains_pii": false,
+    "domain": "Retail",
+    "last_refreshed": "2026-10-14",
+    "row_count_approx": 310000
+  },
+  "documentation_excerpts": [
+    "Catalog: 'Units sold and revenue per product per day, from the till system.'",
+    "Wiki (till_migration_2024): 'The till system was replaced between 2024-02-05 and 2024-03-10. No sales were recorded in that period. Treat those days as missing, not as zero sales.'",
+    "Wiki (product_codes_2024): 'From 2024-04-01, product codes changed. Codes ending in L were replaced by new codes. No mapping table exists between the old and new codes.'"
+  ],
+  "quality_notes": [
+    "Till migration gap 2024-02-05 to 2024-03-10: no rows exist for those days. Confirmed by wiki till_migration_2024 (last edited 2024-03-12). Treat as missing, not zero sales.",
+    "Product codes changed 2024-04-01. Codes ending in L replaced. No mapping table exists. Per wiki product_codes_2024 (last edited 2024-04-02), old and new codes can only be matched by product name, but some product names are not unique. The product list (sales.products) only contains current (post-change) codes.",
+    "Catalog states 310k rows approx, last refreshed 2026-10-14. This is after the use case's as-of date (2026-10-15) so data should be up to date for the recent window."
+  ],
+  "provenance": [
+    {
+      "claim": "Source exists with source_id internal.sales.daily_by_product, 4 columns: sale_date, product_code, units_sold, revenue_eur",
+      "evidence": "get_catalog_entry(entry_id='internal.sales.daily_by_product')"
+    },
+    {
+      "claim": "Temporal coverage from 2022-01-01 to present (open-ended), grain is daily, refresh cadence daily",
+      "evidence": "get_catalog_entry: temporal_coverage.start='2022-01-01', temporal_coverage.end=null, grain='daily', refresh_cadence='daily'"
+    },
+    {
+      "claim": "Till migration gap 2024-02-05 to 2024-03-10 — no rows exist for those days",
+      "evidence": "read_wiki_page(page_id='till_migration_2024'), last_edited 2024-03-12"
+    },
+    {
+      "claim": "Product codes changed 2024-04-01; no mapping table exists; matching can only be done by product name",
+      "evidence": "read_wiki_page(page_id='product_codes_2024'), last_edited 2024-04-02"
+    },
+    {
+      "claim": "Owner is Retail Operations, steward is Marco Bianchi",
+      "evidence": "get_catalog_entry: owner='Retail Operations', steward='Marco Bianchi'"
+    },
+    {
+      "claim": "Access method is warehouse_sql, requires request to Retail Operations",
+      "evidence": "get_catalog_entry: access.method='warehouse_sql', access.request_process='Request to Retail Operations'"
+    }
+  ],
+  "unknowns": [
+    "Exact file size / approx_size_bytes not stated in catalog or wiki.",
+    "No explicit geography/location column in the table; spatial coverage is inferred from the Valdena Gelato Shop being in northern Italy.",
+    "How the products mapping (N2) can be achieved is uncertain — wiki states no mapping table exists and product names are not always unique."
+  ],
+  "sample_findings": []
+}

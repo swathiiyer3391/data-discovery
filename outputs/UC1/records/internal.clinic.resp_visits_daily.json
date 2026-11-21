@@ -1,0 +1,122 @@
+{
+  "source_id": "internal.clinic.resp_visits_daily",
+  "kind": "internal",
+  "title": "Respiratory visits (daily, by district)",
+  "summary": "Daily counts of respiratory clinic visits aggregated by district of residence, covering all districts in Valdena from 2022-01-01 onward, refreshed daily. The dataset contains no patient identifiers (only visit_date, district and visit_count) and has been explicitly approved by the Data Protection Office for this surveillance purpose. The patient-level source (clinic.patient_visits) from which these counts are derived is classified as restricted and may not be used for this analysis.",
+  "schema": {
+    "documented": "structured",
+    "fields": [
+      {
+        "name": "visit_date",
+        "type": "date",
+        "unit": null,
+        "description": "Day of the visits",
+        "pii": false
+      },
+      {
+        "name": "district",
+        "type": "string",
+        "unit": null,
+        "description": "District of residence",
+        "pii": false
+      },
+      {
+        "name": "visit_count",
+        "type": "integer",
+        "unit": null,
+        "description": "Respiratory visits that day",
+        "pii": false
+      }
+    ],
+    "field_count": 3,
+    "notes": "Diagnosis classification system (ICD-10 vs local coding) is not documented in the catalog or any wiki page. The table name suggests all rows are respiratory, but the criteria used to classify a visit as respiratory are not stated."
+  },
+  "temporal": {
+    "start": "2022-01-01",
+    "end": null,
+    "open_ended": true,
+    "grain": "daily",
+    "refresh_cadence": "daily",
+    "metadata_last_updated": "2026-10-14"
+  },
+  "spatial": {
+    "coverage": [
+      "IT"
+    ],
+    "code_system": "unknown — the district field contains residence district names/codes but the code system is not documented",
+    "notes": "Concern raised in candidate profile that district boundaries may have changed during 2024-2025. No wiki page or catalog documentation confirms or refutes this. The district field type is 'string' with no enumerated list available."
+  },
+  "ownership": {
+    "owner": "Clinical Analytics",
+    "steward": "Chiara Conti",
+    "publisher": null
+  },
+  "licence": {
+    "name": "internal",
+    "url": null,
+    "commercial_use": "not_applicable",
+    "mixed_sources": false,
+    "attribution_text": null,
+    "agreement_status": null,
+    "evidence": "Internal data catalog: classification='internal', contains_pii=false. Wiki page clinic_data_policy (last edited 2025-02-01) confirms use is approved for this surveillance purpose."
+  },
+  "access": {
+    "method": "warehouse_sql",
+    "auth_required": true,
+    "request_process": "Request to Clinical Analytics",
+    "reachable": true,
+    "approx_size_bytes": null,
+    "classification": "internal"
+  },
+  "declared_metadata": {
+    "contains_pii": false,
+    "grain": "daily",
+    "status": "active",
+    "row_count_approx": 40000
+  },
+  "documentation_excerpts": [
+    "Respiratory clinic visits counted per day and per district. Contains no patient identifiers."
+  ],
+  "quality_notes": [
+    "Diagnosis classification system not documented: the catalog description says 'Respiratory visits' but does not state whether ICD-10, ICD-9 or a local coding scheme is used, nor how the clinic determines a visit is respiratory-related.",
+    "Weekends and public holidays likely have zero visits — pattern must be distinguished from missing data (raised in candidate profile, not countered by any documentation).",
+    "District boundaries may have changed during 2024-2025. No documentation confirms or denies this. The catalog does not provide an enumerated list of district values.",
+    "Catalog (2026-10-14) states temporal_coverage.start='2022-01-01' and refresh_cadence='daily, last_refreshed=2026-10-14'. The production window 2024-01-01 to 2025-12-31 is fully covered.",
+    "Wiki clinic_data_policy (last edited 2025-02-01) explicitly restricts use: only clinic.resp_visits_daily may be used, not patient-level records with postcode or age band.",
+    "The upstream patient_visits table has diagnosis_code (string, not PII) but the aggregation into resp_visits_daily may apply a filtering or classification step that is undocumented."
+  ],
+  "provenance": [
+    {
+      "claim": "Source exists as internal catalog entry clinic.resp_visits_daily with three columns: visit_date, district, visit_count",
+      "evidence": "get_catalog_entry('internal.clinic.resp_visits_daily')"
+    },
+    {
+      "claim": "Temporal coverage starts 2022-01-01 and is open-ended, refreshed daily",
+      "evidence": "get_catalog_entry('internal.clinic.resp_visits_daily') → temporal_coverage.start='2022-01-01', end=null, refresh_cadence='daily'"
+    },
+    {
+      "claim": "Contains no patient identifiers; approved for this surveillance use",
+      "evidence": "get_catalog_entry() → contains_pii=false; read_wiki_page('clinic_data_policy') → 'Only daily counts by district (clinic.resp_visits_daily) may be used for this purpose.'"
+    },
+    {
+      "claim": "Owner is Clinical Analytics, steward is Chiara Conti",
+      "evidence": "get_catalog_entry('internal.clinic.resp_visits_daily') → owner='Clinical Analytics', steward='Chiara Conti'"
+    },
+    {
+      "claim": "Patient-level records (clinic.patient_visits) are restricted and may not be used for this analysis",
+      "evidence": "read_wiki_page('clinic_data_policy') → 'Patient-level visit records (clinic.patient_visits) may not be used for this analysis.'"
+    },
+    {
+      "claim": "Upstream patient_visits has a diagnosis_code field but the aggregation criteria for what counts as respiratory are not documented",
+      "evidence": "get_catalog_entry('internal.clinic.patient_visits') → columns include diagnosis_code (string, not PII); no documentation linking this to the resp_visits_daily aggregation"
+    }
+  ],
+  "unknowns": [
+    "Diagnosis classification system: unknown — the catalog and wiki do not state whether ICD-10, ICD-9 or a local coding scheme is used to classify a visit as respiratory.",
+    "District code system: unknown — the district field is a string but no enumerated list, lookup table or boundary definition is documented.",
+    "District boundary stability: unknown — no documentation confirms or denies changes during 2024-2025.",
+    "Aggregation criteria: unknown — how visits are classified as 'respiratory' for inclusion in this count is not documented."
+  ],
+  "canonical_ref": "clinic.resp_visits_daily",
+  "sample_findings": []
+}

@@ -1,0 +1,127 @@
+{
+  "source_id": "internal.traffic.hourly_counts",
+  "kind": "internal",
+  "title": "Road traffic counts (hourly)",
+  "location": "azure://valdena-health/mobility/traffic_hourly",
+  "status": "active",
+  "summary": "Hourly vehicle counts from road counters near the monitoring stations in Valdena, covering from 2021-01-01 to present (still updating hourly). Each row records one counter at one hour with the total vehicle count. The data is accessed via warehouse SQL through a request to the Mobility Office. A critical data quality issue is that road counters were replaced on 2024-03-18, changing from per-direction recording to combined directions, so counts cannot be directly compared across that break without adjustment. No sensor location metadata is included in this dataset — a separate asset register would be needed to map counters to air quality stations spatially.",
+  "schema": {
+    "documented": "structured",
+    "fields": [
+      {
+        "name": "counter_id",
+        "type": "string",
+        "description": "Road counter code",
+        "pii": false
+      },
+      {
+        "name": "ts_local",
+        "type": "timestamp",
+        "description": "Hour start, local time",
+        "pii": false
+      },
+      {
+        "name": "vehicles",
+        "type": "integer",
+        "description": "Vehicles counted in the hour",
+        "pii": false
+      }
+    ],
+    "field_count": 3,
+    "notes": "Catalog lists three columns. No counter_id reference table or location data in this dataset. Direction field was removed after the 2024-03-18 counter replacement, but this is not reflected in the schema."
+  },
+  "temporal": {
+    "start": "2021-01-01",
+    "end": null,
+    "open_ended": true,
+    "grain": "hourly",
+    "refresh_cadence": "hourly",
+    "metadata_last_updated": "2026-10-14"
+  },
+  "spatial": {
+    "coverage": [
+      "IT"
+    ],
+    "code_system": null,
+    "notes": "The counters are described as 'near the monitoring stations' in Valdena (northern Italy). The data does not contain any location columns (latitude, longitude, address). A separate asset register would be needed to map counter_id to coordinates."
+  },
+  "ownership": {
+    "owner": "Mobility Office",
+    "steward": "Luca Ferri",
+    "publisher": null
+  },
+  "licence": {
+    "name": "internal",
+    "url": null,
+    "commercial_use": "not_applicable",
+    "mixed_sources": false,
+    "attribution_text": null,
+    "agreement_status": null,
+    "evidence": "get_catalog_entry('internal.traffic.hourly_counts').entry.classification = 'internal'"
+  },
+  "access": {
+    "method": "warehouse_sql",
+    "auth_required": true,
+    "request_process": "Request to the Mobility Office",
+    "reachable": true,
+    "approx_size_bytes": null,
+    "classification": "internal"
+  },
+  "declared_metadata": {
+    "contains_pii": false,
+    "row_count_approx": 15000000
+  },
+  "documentation_excerpts": [
+    "Vehicles counted per hour by road counters near the monitoring stations. (catalog description)",
+    "On 2024-03-18 the road counters were replaced. Before that date, counts were recorded per direction. From 2024-03-18, counts are both directions combined. Do not compare counts across the change without adjusting for it. (wiki page 'counter_replacement_2024', last edited 2024-04-02)"
+  ],
+  "quality_notes": [
+    "Counter replacement on 2024-03-18 changed direction recording: per-direction before, combined after (wiki page 'counter_replacement_2024', last edited 2024-04-02).",
+    "Catalog entry has no note about the 2024-03-18 counter replacement, creating a discrepancy between catalog and wiki documentation.",
+    "No sensor location metadata (coordinates, address) in the catalog entry or table schema — cannot match counters to air quality stations without a separate asset register.",
+    "The catalog lists 3 columns, but the wiki notes that the direction column (which existed before the counter replacement) is not documented in the catalog at all."
+  ],
+  "provenance": [
+    {
+      "claim": "Source is internal, classified as internal data",
+      "evidence": "get_catalog_entry('internal.traffic.hourly_counts').entry.classification = 'internal'"
+    },
+    {
+      "claim": "Temporal coverage starts 2021-01-01 and is still updating (open-ended)",
+      "evidence": "get_catalog_entry('internal.traffic.hourly_counts').entry.temporal_coverage.start = '2021-01-01', end = null"
+    },
+    {
+      "claim": "Grain is hourly, columns are counter_id, ts_local, vehicles",
+      "evidence": "get_catalog_entry('internal.traffic.hourly_counts').entry.columns"
+    },
+    {
+      "claim": "Counter replacement on 2024-03-18 changed direction recording — per-direction before, combined after",
+      "evidence": "read_wiki_page('counter_replacement_2024'), last edited 2024-04-02"
+    },
+    {
+      "claim": "Catalog entry has no note about this change",
+      "evidence": "get_catalog_entry('internal.traffic.hourly_counts').entry.description does not mention the counter replacement; wiki page 'counter_replacement_2024' explicitly says 'The catalog entry for traffic.hourly_counts has no note about this.'"
+    },
+    {
+      "claim": "Owner: Mobility Office, steward: Luca Ferri",
+      "evidence": "get_catalog_entry('internal.traffic.hourly_counts').entry.owner and .steward"
+    },
+    {
+      "claim": "Access requires request to Mobility Office",
+      "evidence": "get_catalog_entry('internal.traffic.hourly_counts').entry.access.request_process"
+    },
+    {
+      "claim": "Approximately 15 million rows",
+      "evidence": "get_catalog_entry('internal.traffic.hourly_counts').entry.row_count_approx"
+    }
+  ],
+  "unknowns": [
+    "Spatial code system: unknown — no location columns exist in the table, and no reference table for counter_id coordinates is documented in the catalog or wiki.",
+    "Approximate size in bytes: not stated. Only row count (15M) is given.",
+    "Agreement status: not applicable (internal source).",
+    "Field-level descriptions beyond the three column names: no additional schema documentation found. Notably, the direction field that existed before the 2024-03-18 counter replacement is undocumented in the catalog.",
+    "Publisher: not stated (owner is Mobility Office)."
+  ],
+  "canonical_ref": "traffic.hourly_counts",
+  "sample_findings": []
+}

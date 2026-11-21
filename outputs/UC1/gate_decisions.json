@@ -1,0 +1,20 @@
+{
+  "_comment": "Gate decisions: one entry per dataset link in your links file. 'url' must match the links file exactly. decision is 'accept' or 'reject'. reason is at least 20 characters, in your own words. Only accepted links are profiled. Copy to outputs/<ID>/gate_decisions.json.",
+  "decisions": [
+    {
+      "url": "https://archive.ics.uci.edu/dataset/360/air+quality",
+      "decision": "accept",
+      "reason": "Verified UCI 360 landing page offline; provides hourly Italian air-quality sensor readings matching the N1 prototype window (2004-03-10 to 2005-04-04)."
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_11_52?format=JSON&lang=EN&geo=IT",
+      "decision": "accept",
+      "reason": "Official Eurostat JSON-stat API covering air-pollution premature mortality indicators (N6) for Italy; host ec.europa.eu will be allowlisted in Task 6 G6."
+    },
+    {
+      "url": "https://catalog.data.gov/dataset/open-air-chicago-hour-aggregations",
+      "decision": "accept",
+      "reason": "Accepted intentionally at the gate so the pipeline formally logs the DOMAIN_NOT_ALLOWLISTED guardrail refusal and geographic mismatch (Chicago vs northern Italy) as a discovery finding."
+    }
+  ]
+}

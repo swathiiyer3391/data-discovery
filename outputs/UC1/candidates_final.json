@@ -1,0 +1,202 @@
+{
+  "candidates": [
+    {
+      "source_id": "internal.airq.station_readings",
+      "kind": "internal",
+      "title": "City station readings (hourly)",
+      "location": "azure://valdena-health/env/station_readings",
+      "need_ids": [
+        "N1",
+        "N3"
+      ],
+      "target_windows": [
+        "production"
+      ],
+      "why_relevant": "Hourly NO2 and PM2.5 (µg/m³) from the city's own monitoring stations. Covers production window (2024-01-01 onward). Station coordinates are needed for spatial join with traffic data. Has a known wiki issue: station VR-03 (Via Roma) switched off on 2024-06-30 — readings stop there.",
+      "found_via": "search_internal_catalog('Valdena air quality station hourly readings')",
+      "suspected_issues": [
+        "Station VR-03 was switched off 2024-06-30; no readings after that date",
+        "Temporal coverage starts 2023-01-01, so does NOT cover prototype window (2004-2005)",
+        "No temperature/humidity columns in schema — weather need (N3) must be sourced elsewhere even for production",
+        "Access requires request to Environment Monitoring Unit — not yet confirmed as granted"
+      ],
+      "canonical_ref": "airq.station_readings"
+    },
+    {
+      "source_id": "internal.traffic.hourly_counts",
+      "kind": "internal",
+      "title": "Road traffic counts (hourly)",
+      "location": "azure://valdena-health/mobility/traffic_hourly",
+      "need_ids": [
+        "N2"
+      ],
+      "target_windows": [
+        "production"
+      ],
+      "why_relevant": "Hourly vehicle counts from road counters near monitoring stations. Covers production window from 2021 onward. Needed to model traffic contribution to air pollution.",
+      "found_via": "search_internal_catalog('traffic sensor hourly counts vehicle flow 2024 2025')",
+      "suspected_issues": [
+        "Counter replacement on 2024-03-18 changed direction recording (per-direction before, combined after) — cannot compare counts across the break without adjustment",
+        "Catalog entry has no note about this change per wiki page 'counter_replacement_2024'",
+        "No sensor location metadata in catalog — needs separate asset register to match spatially to air quality stations",
+        "Access requires request to Mobility Office"
+      ],
+      "canonical_ref": "traffic.hourly_counts"
+    },
+    {
+      "source_id": "internal.clinic.resp_visits_daily",
+      "kind": "internal",
+      "title": "Respiratory visits (daily, by district)",
+      "location": "azure://valdena-health/clinic/resp_visits_daily",
+      "need_ids": [
+        "N4"
+      ],
+      "target_windows": [
+        "production"
+      ],
+      "why_relevant": "Daily respiratory clinic visit counts by district of residence, no patient identifiers. Covers production window from 2022 onward. Explicitly approved by Data Protection Office for this surveillance purpose.",
+      "found_via": "search_internal_catalog('respiratory clinic visits daily by district counts')",
+      "suspected_issues": [
+        "Weekends and public holidays likely have zero visits — pattern must be distinguished from missing data",
+        "Diagnosis classification system not documented (ICD-10 vs local coding)",
+        "District boundaries may have changed during 2024-2025"
+      ],
+      "canonical_ref": "clinic.resp_visits_daily"
+    },
+    {
+      "source_id": "internal.clinic.patient_visits",
+      "kind": "internal",
+      "title": "Clinic visits (one row per patient visit)",
+      "location": "azure://valdena-health/clinic/patient_visits",
+      "need_ids": [
+        "N5"
+      ],
+      "target_windows": [
+        "production"
+      ],
+      "why_relevant": "Patient-level visit records with age band, postcode and diagnosis code. Could theoretically serve N5 at event grain.",
+      "found_via": "search_internal_catalog('Valdena clinic patient visit records respiratory')",
+      "suspected_issues": [
+        "Data Protection Office explicitly prohibits use: 'Patient-level visit records (clinic.patient_visits) may not be used for this analysis' per wiki page 'clinic_data_policy'",
+        "Contains PII (patient_key, age_band, postcode) — cannot leave clinic systems",
+        "Access requires Data Protection Office approval which policy says will not be granted for this use case"
+      ],
+      "canonical_ref": "clinic.patient_visits"
+    },
+    {
+      "source_id": "api.open_meteo_archive",
+      "kind": "public_api",
+      "title": "Open-Meteo Historical Weather API (reanalysis)",
+      "location": "https://archive-api.open-meteo.com/v1/archive",
+      "need_ids": [
+        "N3"
+      ],
+      "target_windows": [
+        "prototype",
+        "production"
+      ],
+      "why_relevant": "Hourly ERA5 reanalysis data (temperature_2m, relative_humidity_2m) covering both windows. Registered and approved for prototyping AND production. Must set coordinates to a northern Italian city (default is Lisbon).",
+      "found_via": "list_external_register",
+      "suspected_issues": [
+        "Default coordinates are Lisbon (38.72, -9.14) — must be changed to northern Italy (e.g. Milan ~45.46, 9.19 or similar justified location)",
+        "ERA5 reanalysis ~9-31 km resolution may miss local microclimatic effects",
+        "Historical data may have 5-30 day latency",
+        "No internal weather station data found for validation"
+      ],
+      "canonical_ref": "api.open_meteo_archive"
+    },
+    {
+      "source_id": "api.nager_public_holidays",
+      "kind": "public_api",
+      "title": "Nager.Date public holidays API",
+      "need_ids": [
+        "N4"
+      ],
+      "target_windows": [
+        "production"
+      ],
+      "why_relevant": "Italian public holidays for 2024-2025 needed to model zero-visit days in clinic data (weekends and holidays). Registered and approved.",
+      "found_via": "list_external_register",
+      "suspected_issues": [
+        "Only provides holiday dates — does not directly satisfy a need",
+        "Useful ancillary data for N4 modelling"
+      ],
+      "canonical_ref": "api.nager_public_holidays"
+    },
+    {
+      "source_id": "vendor.atmosdata_pro",
+      "kind": "vendor_feed",
+      "title": "AtmosData Pro station-grade weather feed",
+      "location": "https://api.atmosdata.example/v2/observations",
+      "need_ids": [
+        "N3"
+      ],
+      "target_windows": [
+        "production"
+      ],
+      "why_relevant": "Station-grade weather data that could have covered N3 for production window at higher local accuracy than Open-Meteo reanalysis.",
+      "found_via": "list_external_register",
+      "suspected_issues": [
+        "Agreement expired 2025-12-31 and renewal not signed",
+        "API key revoked 2026-01-01",
+        "No approved purposes listed — not usable for either window",
+        "Included for transparency: rejected source"
+      ],
+      "canonical_ref": "vendor.atmosdata_pro"
+    },
+    {
+      "source_id": "link.uci_360",
+      "kind": "dataset_link",
+      "title": "Dataset link: https://archive.ics.uci.edu/dataset/360/air+quality",
+      "location": "https://archive.ics.uci.edu/dataset/360/air+quality",
+      "canonical_ref": "uci:360",
+      "need_ids": [
+        "N1"
+      ],
+      "target_windows": [
+        "prototype"
+      ],
+      "why_relevant": "Public hourly air-quality readings from an Italian city, 2004-2005. Check the city, the period and the missing-value coding.",
+      "found_via": "human input",
+      "suspected_issues": []
+    },
+    {
+      "source_id": "link.europa_sdg_11_52_099aa6",
+      "kind": "dataset_link",
+      "title": "Dataset link: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_11_52?format=JSON&",
+      "location": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_11_52?format=JSON&lang=EN&geo=IT",
+      "canonical_ref": "ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_11_52?format=JSON&geo=IT&lang=EN",
+      "need_ids": [
+        "N6"
+      ],
+      "target_windows": [
+        "prototype",
+        "production"
+      ],
+      "why_relevant": "Eurostat yearly deaths linked to PM2.5, Italy. National context only.",
+      "found_via": "human input",
+      "suspected_issues": []
+    },
+    {
+      "source_id": "link.data_open_air_chicago_hour_aggre_d4970b",
+      "kind": "dataset_link",
+      "title": "Dataset link: https://catalog.data.gov/dataset/open-air-chicago-hour-aggregations",
+      "location": "https://catalog.data.gov/dataset/open-air-chicago-hour-aggregations",
+      "canonical_ref": "catalog.data.gov/dataset/open-air-chicago-hour-aggregations",
+      "need_ids": [
+        "N1"
+      ],
+      "target_windows": [
+        "prototype"
+      ],
+      "why_relevant": "Hourly air-quality sensor data from a US city, found while searching for more hourly data.",
+      "found_via": "human input",
+      "suspected_issues": []
+    }
+  ],
+  "links": [
+    "https://archive.ics.uci.edu/dataset/360/air+quality",
+    "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_11_52?format=JSON&lang=EN&geo=IT",
+    "https://catalog.data.gov/dataset/open-air-chicago-hour-aggregations"
+  ]
+}
