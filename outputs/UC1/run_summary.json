@@ -1,0 +1,23 @@
+{
+  "use_case": "UC1",
+  "model": "DeepSeek-V4-Flash",
+  "stages": {
+    "profile": 730.9,
+    "assess": 125.1,
+    "memo": 36.4
+  },
+  "totals": {
+    "llm_calls": 53,
+    "input_tokens": 212552,
+    "output_tokens": 41157,
+    "cache_read_input_tokens": 257024,
+    "tool_calls": 51,
+    "tool_errors": 4,
+    "http_requests": 12,
+    "http_refused": 3
+  },
+  "warnings": [
+    "dataset link host 'catalog.data.gov' is not allowlisted; inspection will be refused (gap G6)"
+  ],
+  "finished_at": "2026-11-20T11:54:10Z"
+}

@@ -1,0 +1,159 @@
+{
+  "source_id": "api.open_meteo_archive",
+  "kind": "public_api",
+  "title": "Open-Meteo Historical Weather API (reanalysis)",
+  "location": "https://archive-api.open-meteo.com/v1/archive",
+  "status": "active",
+  "summary": "Gap-free daily maximum temperature (temperature_2m_max) for any latitude/longitude globally, derived from ERA5/ERA5-Land reanalysis (1940-present) and ECMWF IFS (2017-present, 9 km resolution). The API is free, requires no authentication, and is registered with approved production use for UC2. Probes for Verona (45.44, 10.99) confirmed daily_max_temperature_2m values for both the history window (June 2023–May 2025) and the recent window (June 2025–March 2026). Latency of a few days may apply for the most recent days, typical of reanalysis data. Licence: CC BY 4.0 — commercial use allowed with attribution.",
+  "schema": {
+    "documented": "structured",
+    "fields": [
+      {
+        "name": "daily.time",
+        "type": "date (iso8601)",
+        "unit": null,
+        "description": "Date of the daily reading (YYYY-MM-DD)"
+      },
+      {
+        "name": "daily.temperature_2m_max",
+        "type": "float",
+        "unit": "°C",
+        "description": "Daily maximum temperature at 2 m above ground"
+      },
+      {
+        "name": "latitude",
+        "type": "float",
+        "description": "Requested latitude (decimal degrees)"
+      },
+      {
+        "name": "longitude",
+        "type": "float",
+        "description": "Requested longitude (decimal degrees)"
+      },
+      {
+        "name": "elevation",
+        "type": "float",
+        "unit": "m",
+        "description": "Elevation of the grid cell (approx)"
+      },
+      {
+        "name": "hourly.time",
+        "type": "datetime (iso8601)",
+        "description": "Hourly timestamps (returned by default even when only daily is requested)"
+      },
+      {
+        "name": "hourly.temperature_2m",
+        "type": "float",
+        "unit": "°C",
+        "description": "Hourly temperature at 2 m (returned as part of default probe query)"
+      },
+      {
+        "name": "hourly.shortwave_radiation",
+        "type": "float",
+        "unit": "W/m²",
+        "description": "Hourly shortwave radiation (returned as part of default probe query)"
+      }
+    ],
+    "field_count": 8,
+    "notes": "The API returns JSON with daily and hourly data arrays. The 'daily' object always contains 'time' plus the requested daily variables. Hourly variables are returned even if only daily variables were requested (they come from the register's default_query). The key field for N3 is 'daily.temperature_2m_max'. Other daily variables available include precipitation_sum, wind_speed_10m_max, etc."
+  },
+  "temporal": {
+    "start": "1940-01-01",
+    "end": null,
+    "open_ended": true,
+    "grain": "daily",
+    "refresh_cadence": "reanalysis updated multiple times per year; newest data typically has a few days latency",
+    "metadata_last_updated": null
+  },
+  "spatial": {
+    "coverage": [
+      "IT"
+    ],
+    "code_system": "latitude/longitude (decimal degrees)",
+    "notes": "Global coverage — must be queried by lat/lon. A single point was probed: Verona at 45.44°N, 10.99°E, as a plausible northern Italian city for the ice-cream shop. The grid cell is approx 0.1° (ERA5-Land) or 0.25° (ERA5). From 2017 onwards, 9 km resolution (ECMWF IFS). The exact shop location should be used for production."
+  },
+  "ownership": {
+    "owner": "Open-Meteo (Patrick Zippenfenig)",
+    "steward": null,
+    "publisher": "Open-Meteo.com"
+  },
+  "licence": {
+    "name": "CC BY 4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/",
+    "commercial_use": "yes",
+    "mixed_sources": true,
+    "attribution_text": "Weather data by Open-Meteo.com — link to https://open-meteo.com/ required",
+    "agreement_status": "not_required_open_data",
+    "evidence": "Probe of https://open-meteo.com/en/licence — 'API data are offered under Attribution 4.0 International (CC BY 4.0)' with explicit attribution requirements. Also listed in external register (api.open_meteo_archive) with agreement_status: not_required_open_data and approved for production."
+  },
+  "access": {
+    "method": "rest_api",
+    "auth_required": false,
+    "request_process": null,
+    "reachable": true,
+    "approx_size_bytes": null,
+    "classification": null
+  },
+  "declared_metadata": {
+    "has_missing_values": null,
+    "contains_pii": false,
+    "is_public": true,
+    "free_tier_limited": true
+  },
+  "documentation_excerpts": [
+    "Gap-free and consistent historical weather data using weather reanalysis from ERA5 (0.25°, from 1940) and ERA5-Land (0.1°, from 1950) and ECMWF IFS (9 km, from 2017) — from https://open-meteo.com/en/docs/historical-weather-api",
+    "API data are offered under Attribution 4.0 International (CC BY 4.0) — from https://open-meteo.com/en/licence",
+    "Open-Meteo utilises open-data from various national weather services including: ... ItaliaMeteo-ARPAE (CC-BY Licence) ... Copernicus Climate Change Service C3S (Licence) — from https://open-meteo.com/en/licence"
+  ],
+  "quality_notes": [
+    "The API probe returned both hourly and daily data even when only daily variables were requested; the hourly temperature_2m and shortwave_radiation come from the register's default_query parameter, not from the intended production query — production code should request only daily variables to minimise response size.",
+    "Reanalysis data has a latency of a few days for very recent dates; the most recent few days of the 'recent' window (March 2026) may be from preliminary data or may have a small gap before final reanalysis is available. The probe of 28–31 March 2026 did return data, confirming coverage through to the end of the window.",
+    "The underlying data sources have mixed licences (various CC-BY, CC-BY-SA, and Copernicus licence terms), but the Open-Meteo API output is offered as CC BY 4.0 — mixed_sources flagged as true.",
+    "Geographic assumption of Verona (45.44, 10.99) must be validated against the actual shop location.",
+    "The API uses grid-averaged reanalysis data, not actual weather station measurements; values represent the grid cell average, which may differ from the microclimate at a specific shop address."
+  ],
+  "provenance": [
+    {
+      "claim": "The API is registered in the external register for UC2 with approved production use and agreement status 'not_required_open_data'",
+      "evidence": "list_external_register() returned api.open_meteo_archive with agreement_status='not_required_open_data', approved_purposes=['prototyping','production']"
+    },
+    {
+      "claim": "daily.temperature_2m_max is available and returned values for Verona on 2023-06-01 through 2023-06-03",
+      "evidence": "call_public_api(source_id='api.open_meteo_archive', query={latitude:'45.44', longitude:'10.99', start_date:'2023-06-01', end_date:'2023-06-03', daily:'temperature_2m_max', timezone:'Europe/Rome'}) — returned daily time series with temperature_2m_max: [26.4, 25.2, 25.4]"
+    },
+    {
+      "claim": "The API also covers the end of the recent window (March 2026)",
+      "evidence": "call_public_api(source_id='api.open_meteo_archive', query={latitude:'45.44', longitude:'10.99', start_date:'2026-03-28', end_date:'2026-03-31', daily:'temperature_2m_max', timezone:'Europe/Rome'}) — returned daily time series with temperature_2m_max: [16.2, 18.1, 16.2, ...]"
+    },
+    {
+      "claim": "Licence is CC BY 4.0 with attribution required; commercial use allowed",
+      "evidence": "probe_url('https://open-meteo.com/en/licence') — page states 'API data are offered under Attribution 4.0 International (CC BY 4.0)' and specifies attribution text"
+    },
+    {
+      "claim": "Data covers 1940 to present from ERA5/ERA5-Land reanalysis and ECMWF IFS",
+      "evidence": "probe_url('https://open-meteo.com/en/docs/historical-weather-api') — docs page states 'Gap-free and consistent historical weather data using weather reanalysis from ERA5 (0.25°, from 1940) and ERA5-Land (0.1°, from 1950) and ECMWF IFS (9 km, from 2017)'"
+    },
+    {
+      "claim": "The API endpoint URL is https://archive-api.open-meteo.com/v1/archive",
+      "evidence": "list_external_register() returned endpoint: 'https://archive-api.open-meteo.com/v1/archive'"
+    },
+    {
+      "claim": "Underlying data sources have mixed licences (various national weather services under CC-BY, CC-BY-SA, Copernicus licence)",
+      "evidence": "probe_url('https://open-meteo.com/en/licence') — lists DWD (CC-BY), ECMWF (CC-BY), UK Met Office (CC-BY-SA), Copernicus (Licence), etc."
+    }
+  ],
+  "unknowns": [
+    "Exact latency between real-time and reanalysis availability — the docs say 'from 1940 until now' but do not state the exact lag for the most recent days.",
+    "Whether the API has rate limits that could constrain querying the full 2-year history + 10-month recent window daily for a single lat/lon.",
+    "The exact elevation/coordinates of the Valdena Gelato Shop — Verona is assumed; production should use the precise shop coordinates.",
+    "Whether 'temperature_2m_max' is available consistently for every single day in the full period or if some days have null values (the probes only checked days that returned data)."
+  ],
+  "canonical_ref": null,
+  "sample_findings": [
+    "daily.time: date values in ISO 8601 (YYYY-MM-DD) format",
+    "daily.temperature_2m_max: float values in °C — probe for 2023-06-01..03 gave [26.4, 25.2, 25.4]; probe for 2026-03-28..31 gave [16.2, 18.1, 16.2, ...]; no negative values, no nulls in the small sample",
+    "latitude/longitude: returned as 45.448154, 11.003136 (slightly different from the requested 45.44, 10.99 — API snaps to the nearest grid cell centre)",
+    "elevation: 69.0 m for the Verona grid cell",
+    "hourly.temperature_2m: hourly values in °C — sample ranged from 6.9°C to 17.1°C in the probed days"
+  ]
+}

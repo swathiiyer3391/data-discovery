@@ -1,0 +1,242 @@
+{
+  "use_case": "UC2",
+  "as_of": "2026-10-15",
+  "generated_at": "2026-11-20T18:20:18Z",
+  "model": "DeepSeek-V4-Flash",
+  "overall_verdict": "feasible_with_conditions",
+  "overall_rationale": "All three must needs (N1, N2, N3) can be met with conditions, making the overall verdict feasible_with_conditions.\n\nN1 (daily sales): internal.sales.daily_by_product covers both windows at daily grain with units_sold and revenue_eur per product. Conditions: request access from Retail Operations, handle the 34-day till migration gap, and manage the product code change by joining through product names.\n\nN2 (product code mapping): partially met — the data exists in daily_by_product (old codes pre-2024, new codes post-2024) and product names in sales.products. A partial mapping can be derived automatically for uniquely-named products, but non-unique names require manual intervention from the shop owner. This is the weakest link; if the mapping cannot be resolved, some products' pre-change sales cannot be linked to post-change identities.\n\nN3 (daily max temperature): api.open_meteo_archive covers both windows fully with gap-free reanalysis data. Conditions: CC BY 4.0 attribution, verify exact shop coordinates, note reanalysis latency.\n\nN4 (public holidays, should): api.nager_public_holidays — feasible, MIT-licensed, covers all years. Only national holidays for Italy (no Veneto regional holidays).\n\nN5 (shop opening days/events, should): internal.store.calendar — feasible, no conditions, directly matches the need.\n\nThe main risk is N2: without a complete product code mapping, the sales data from before and after April 2024 may not be fully comparable at product level. The shop owner should be engaged early to help resolve ambiguous name matches.",
+  "need_coverage": [
+    {
+      "need_id": "N1",
+      "status": "met_with_conditions",
+      "best_sources": [
+        "internal.sales.daily_by_product"
+      ],
+      "gap": "34-day gap (2024-02-05 to 2024-03-10) during till migration - no sales rows exist. Product code change on 2024-04-01 requires join handling via product names."
+    },
+    {
+      "need_id": "N2",
+      "status": "partially_met",
+      "best_sources": [
+        "internal.sales.daily_by_product",
+        "internal.sales.products"
+      ],
+      "gap": "No automated mapping exists between old (pre-2024-04-01) and new codes. Matching by product name is possible for uniquely-named products; some names are not unique and require manual resolution from shop owner."
+    },
+    {
+      "need_id": "N3",
+      "status": "met_with_conditions",
+      "best_sources": [
+        "api.open_meteo_archive"
+      ],
+      "gap": "None - covers both windows fully. Conditions: CC BY 4.0 attribution, verify exact shop coordinates, accept reanalysis latency for most recent days."
+    },
+    {
+      "need_id": "N4",
+      "status": "met",
+      "best_sources": [
+        "api.nager_public_holidays"
+      ],
+      "gap": "Only national public holidays are covered - regional/provincial holidays (e.g. Veneto patron saint days) are not included. This is acceptable for a should-priority need; if regional holidays are needed, supplementary sources would be required."
+    },
+    {
+      "need_id": "N5",
+      "status": "met",
+      "best_sources": [
+        "internal.store.calendar"
+      ],
+      "gap": "None - source directly matches the need at daily grain for both windows. Local events are self-reported and may be incomplete."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "api.nager_public_holidays",
+      "kind": "public_api",
+      "title": "Nager.Date public holidays API",
+      "location": "https://date.nager.at/api/v3/PublicHolidays/{year}/{country}",
+      "canonical_ref": null,
+      "need_ids": [
+        "N4"
+      ],
+      "target_windows": [
+        "history",
+        "recent"
+      ],
+      "verdict": "feasible",
+      "red_flags": [],
+      "red_flag_details": [],
+      "dismissed_rule_flags": [
+        {
+          "code": "DQ-METADATA-CONTRADICTION",
+          "reason": "The 'null' values for counties and launchYear fields are structurally meaningful (Italy has no sub-national holidays in the API, launch year is unknown for Italian holidays), not missing values. has_missing_values='no' remains accurate — every entry has all expected field values present."
+        }
+      ],
+      "conditions": [],
+      "who_can_resolve": [],
+      "rationale": "MIT-licensed, freely accessible API providing national public holidays for Italy. Probes confirmed 13-14 holidays per year (2023-2026) with global=true for all Italian entries. Daily grain exactly matches N4. Only national-level holidays are covered — regional/provincial holidays (e.g. Veneto patron saint days) are not included, which is a documented limitation but not a blocker for the should-priority N4 need. The API endpoint was reachable and all fields documented in the schema were returned. No access barriers, no PII, clear MIT licence permits commercial use."
+    },
+    {
+      "source_id": "api.open_meteo_archive",
+      "kind": "public_api",
+      "title": "Open-Meteo Historical Weather API (reanalysis)",
+      "location": "https://archive-api.open-meteo.com/v1/archive",
+      "canonical_ref": null,
+      "need_ids": [
+        "N3"
+      ],
+      "target_windows": [
+        "history",
+        "recent"
+      ],
+      "verdict": "feasible_with_conditions",
+      "red_flags": [
+        "LIC-ATTRIBUTION",
+        "LIC-MIXED"
+      ],
+      "red_flag_details": [
+        {
+          "code": "LIC-ATTRIBUTION",
+          "severity": "minor",
+          "evidence": "Licence 'CC BY 4.0' requires attribution text: 'Weather data by Open-Meteo.com' with link to https://open-meteo.com/",
+          "raised_by": "rule"
+        },
+        {
+          "code": "LIC-MIXED",
+          "severity": "major",
+          "evidence": "Record states mixed_sources=true: underlying data from DWD (CC-BY), ECMWF (CC-BY), UK Met Office (CC-BY-SA), Copernicus (Licence), ItaliaMeteo-ARPAE (CC-BY) per https://open-meteo.com/en/licence",
+          "raised_by": "rule"
+        }
+      ],
+      "dismissed_rule_flags": [],
+      "conditions": [
+        "Include CC BY 4.0 attribution ('Weather data by Open-Meteo.com') in any output",
+        "Verify exact shop coordinates (not the assumed Verona 45.44, 10.99) before production use",
+        "Note that recent reanalysis data has a few days latency — the very end of recent window may use preliminary data"
+      ],
+      "who_can_resolve": [
+        "Client (shop owner): provide exact shop lat/lon",
+        "Analytics team: add attribution text to reports"
+      ],
+      "rationale": "Free, no-auth API providing gap-free daily maximum temperature from ERA5/ERA5-Land reanalysis (1940-present) and ECMWF IFS (9 km, 2017+). Probes confirmed temperature_2m_max for Verona across both windows. CC BY 4.0 licence allows commercial use with attribution. LIC-MIXED is noted because upstream sources have different terms, but the API's output is explicitly offered under CC BY 4.0, making this manageable. The main conditions are: (1) proper attribution, (2) verify the exact shop coordinates instead of assumed Verona, and (3) accept that reanalysis has a small latency for the most recent days."
+    },
+    {
+      "source_id": "internal.sales.daily_by_product",
+      "kind": "internal",
+      "title": "Daily sales by product",
+      "location": "azure://valdena-gelato/sales/daily_by_product",
+      "canonical_ref": null,
+      "need_ids": [
+        "N1"
+      ],
+      "target_windows": [
+        "history",
+        "recent"
+      ],
+      "verdict": "feasible_with_conditions",
+      "red_flags": [
+        "ACC-RESTRICTED",
+        "COV-PARTIAL-WINDOW",
+        "DQ-SEMANTIC-ENCODING"
+      ],
+      "red_flag_details": [
+        {
+          "code": "ACC-RESTRICTED",
+          "severity": "major",
+          "evidence": "auth_required=True, classification=confidential, access.request_process='Request to Retail Operations'",
+          "raised_by": "rule"
+        },
+        {
+          "code": "DQ-SEMANTIC-ENCODING",
+          "severity": "major",
+          "evidence": "Wiki product_codes_2024 (last_edited 2024-04-02) states codes ending in L were replaced on 2024-04-01 with new codes; no mapping table exists. The product_code column uses different code systems before and after this date, encoding the same products differently.",
+          "raised_by": "judgement"
+        },
+        {
+          "code": "COV-PARTIAL-WINDOW",
+          "severity": "major",
+          "evidence": "Wiki till_migration_2024 (last_edited 2024-03-12) confirms no rows exist from 2024-02-05 to 2024-03-10 (34 days). This gap falls within the history window (2023-06-01 to 2025-05-31).",
+          "raised_by": "judgement"
+        }
+      ],
+      "dismissed_rule_flags": [],
+      "conditions": [
+        "Request access from Retail Operations (Marco Bianchi) — see ACC-RESTRICTED",
+        "Treat the 2024-02-05 to 2024-03-10 gap as missing data (not zero sales), and document this in any analysis",
+        "For product code matching (N2): join old and new product codes by product name via sales.products table, accepting some non-unique names require manual resolution from shop owner"
+      ],
+      "who_can_resolve": [
+        "Marco Bianchi (Retail Operations steward): grant access",
+        "Shop owner: resolve ambiguous product name matches for non-unique names"
+      ],
+      "rationale": "Core source for N1: daily-grain units_sold and revenue_eur per product, covering 2022-01-01 to present (both windows). 310k rows, 64 products. Two documented quality issues: (1) a 34-day gap during till migration (Feb-Mar 2024) — not zero sales, just missing, (2) product codes changed on 2024-04-01 with no mapping table — old codes ending in L replaced. For N1 (daily sales by product), the data is usable within each code regime — the code change is a join issue rather than a sales data issue. Access requires a request to Retail Operations (confidential classification)."
+    },
+    {
+      "source_id": "internal.sales.products",
+      "kind": "internal",
+      "title": "Product list (current codes)",
+      "location": "azure://valdena-gelato/sales/products",
+      "canonical_ref": null,
+      "need_ids": [
+        "N2",
+        "N1"
+      ],
+      "target_windows": [
+        "history",
+        "recent"
+      ],
+      "verdict": "feasible_with_conditions",
+      "red_flags": [
+        "ACC-RESTRICTED",
+        "DQ-SEMANTIC-ENCODING"
+      ],
+      "red_flag_details": [
+        {
+          "code": "ACC-RESTRICTED",
+          "severity": "major",
+          "evidence": "auth_required=True, classification=internal, but access.request_process='Open to analytics roles'",
+          "raised_by": "rule"
+        },
+        {
+          "code": "DQ-SEMANTIC-ENCODING",
+          "severity": "major",
+          "evidence": "Wiki product_codes_2024 confirms this table only has current (post-2024) codes; old codes (ending in L) are not stored. The semantic encoding (code system) changed on 2024-04-01 and this table only contains one side of that system.",
+          "raised_by": "judgement"
+        }
+      ],
+      "dismissed_rule_flags": [],
+      "conditions": [
+        "For N2: this table provides current codes only — must be combined with old codes found in daily_by_product records before 2024-04-01, matched by product name",
+        "For non-unique product names, shop owner must provide manual mapping",
+        "Last refreshed 2025-03-31 per catalog — verify any products added after that date are included or supplemented"
+      ],
+      "who_can_resolve": [
+        "Analytics team: join by product name to create mapping",
+        "Shop owner / Marco Bianchi: resolve ambiguous name matches"
+      ],
+      "rationale": "Static product lookup table (64 rows, 3 columns: product_code, product_name, category). Provides current (post-2024) product codes and names. For N1, it serves as a product catalogue to augment daily sales. For N2 (code mapping), it provides only the post-change side — no pre-change codes are stored. The wiki explicitly states no mapping exists and names are not always unique. The mapping must be reconstructed by matching product names between old-code periods (from daily_by_product) and new-code periods, with manual intervention for ambiguous cases. Access is 'open to analytics roles' per catalog."
+    },
+    {
+      "source_id": "internal.store.calendar",
+      "kind": "internal",
+      "title": "Shop calendar (opening days & local events)",
+      "location": "azure://valdena-gelato/store/calendar",
+      "canonical_ref": null,
+      "need_ids": [
+        "N5"
+      ],
+      "target_windows": [
+        "history",
+        "recent"
+      ],
+      "verdict": "feasible",
+      "red_flags": [],
+      "red_flag_details": [],
+      "dismissed_rule_flags": [],
+      "conditions": [],
+      "who_can_resolve": [],
+      "rationale": "Clean daily-grain shop calendar covering 2022-01-01 to present with is_open (boolean) and event_name (string) columns. Matches N5 exactly for both windows. ~1500 rows (~4 years of daily data). Internal source, no access barriers (Open to analytics roles, auth_required=false). Weekly refresh means the most recent week may be up to 5 days stale, but this is acceptable for a should-priority need. Local events are self-reported (free-text, no controlled vocabulary), which may mean incomplete coverage — a known limitation documented in the record. No wiki documentation exists but the catalog entry is self-sufficient."
+    }
+  ],
+  "rule_warnings": [],
+  "dataset_links": []
+}

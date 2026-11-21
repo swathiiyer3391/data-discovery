@@ -1,0 +1,97 @@
+{
+  "source_id": "vendor.atmosdata_pro",
+  "kind": "vendor_feed",
+  "title": "AtmosData Pro station-grade weather feed (fictional vendor)",
+  "summary": "A vendor-supplied station-grade weather feed intended for N3 (hourly temperature and humidity) during the production window. The contract (AD-2021-114) covering 2022-01-01 to 2025-12-31 has expired, the renewal has not been signed, and the API key was revoked on 2026-01-01. The register lists no approved purposes. The feed cannot be accessed or used for any window in this use case.",
+  "status": "expired",
+  "schema": {
+    "documented": "none",
+    "fields": [],
+    "field_count": null,
+    "notes": "No documentation available; the register entry has no docs_url or terms_url. Schema cannot be described."
+  },
+  "temporal": {
+    "start": null,
+    "end": null,
+    "grain": "unknown",
+    "refresh_cadence": null,
+    "metadata_last_updated": null
+  },
+  "spatial": {
+    "coverage": [],
+    "code_system": null,
+    "notes": "No spatial coverage information available from the register entry."
+  },
+  "ownership": {
+    "owner": null,
+    "steward": null,
+    "publisher": "AtmosData (fictional vendor)"
+  },
+  "licence": {
+    "name": null,
+    "url": null,
+    "commercial_use": "unknown",
+    "mixed_sources": null,
+    "attribution_text": null,
+    "agreement_status": "expired",
+    "evidence": "list_external_register: agreement_detail states contract AD-2021-114 expired 2025-12-31, no renewal signed. No terms_url or docs_url in the register to read a licence."
+  },
+  "access": {
+    "method": "rest_api",
+    "auth_required": true,
+    "request_process": "Vendor feed accessed via API key. Key revoked 2026-01-01. New contract needed.",
+    "reachable": false,
+    "approx_size_bytes": null,
+    "classification": null
+  },
+  "declared_metadata": {
+    "approved_purposes": [],
+    "agreement_status": "expired",
+    "auth": "API key (revoked 2026-01-01)"
+  },
+  "documentation_excerpts": [
+    "list_external_register: agreement_detail = 'Contract AD-2021-114 ran 2022-01-01 to 2025-12-31. Renewal is waiting on Procurement; no signed renewal on file.'",
+    "list_external_register: approved_purposes = []",
+    "list_external_register: auth = 'API key (revoked 2026-01-01)'"
+  ],
+  "quality_notes": [
+    "Agreement expired 2025-12-31 and not renewed.",
+    "API key revoked 2026-01-01; the feed cannot be called.",
+    "No approved purposes are listed — zero purposes approved for this use case.",
+    "No docs_url or terms_url were provided in the register, so the schema, licence, spatial coverage and refresh cadence are all unknown.",
+    "Source included in the candidate list for transparency as a rejected source."
+  ],
+  "provenance": [
+    {
+      "claim": "Agreement status is 'expired'",
+      "evidence": "list_external_register for vendor.atmosdata_pro → agreement_status field"
+    },
+    {
+      "claim": "Contract AD-2021-114 ran 2022-01-01 to 2025-12-31, renewal not signed",
+      "evidence": "list_external_register → agreement_detail"
+    },
+    {
+      "claim": "API key revoked 2026-01-01",
+      "evidence": "list_external_register → auth field"
+    },
+    {
+      "claim": "No approved purposes listed",
+      "evidence": "list_external_register → approved_purposes (empty array)"
+    },
+    {
+      "claim": "No documentation URL or terms URL available",
+      "evidence": "list_external_register → docs_url = null, terms_url = null"
+    }
+  ],
+  "unknowns": [
+    "Schema / field names and types (no docs_url to probe)",
+    "Temporal coverage (start and end dates of the data itself)",
+    "Spatial coverage (which stations / areas)",
+    "Refresh cadence",
+    "Licence name and terms",
+    "Owner and steward identities",
+    "Data volume / approx_size_bytes"
+  ],
+  "canonical_ref": "vendor.atmosdata_pro",
+  "sample_findings": []
+}

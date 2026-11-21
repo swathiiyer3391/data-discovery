@@ -1,0 +1,144 @@
+{
+  "source_id": "internal.clinic.patient_visits",
+  "kind": "internal",
+  "title": "Clinic visits (one row per patient visit)",
+  "status": "active",
+  "summary": "Patient-level clinical visit records from Valdena clinics, one row per visit, covering 2019-01-01 to present (daily refresh). Schema includes pseudonymised patient_key, visit timestamp, age_band, postcode and diagnosis_code. Contains PII (patient_key, age_band, postcode). The Data Protection Office explicitly prohibits use for this analysis per the clinic_data_policy wiki page (last edited 2025-02-01). Access requires Data Protection Office approval, which the policy states will not be granted for this use case. The catalog entry records ~900K rows.",
+  "schema": {
+    "documented": "structured",
+    "fields": [
+      {
+        "name": "patient_key",
+        "type": "string",
+        "description": "Pseudonymised patient key",
+        "pii": true
+      },
+      {
+        "name": "visit_ts",
+        "type": "timestamp",
+        "description": "Visit time",
+        "pii": false
+      },
+      {
+        "name": "age_band",
+        "type": "string",
+        "description": "Five-year age band",
+        "pii": true
+      },
+      {
+        "name": "postcode",
+        "type": "string",
+        "description": "Patient postcode",
+        "pii": true
+      },
+      {
+        "name": "diagnosis_code",
+        "type": "string",
+        "description": "Diagnosis code",
+        "pii": false
+      }
+    ],
+    "field_count": 5,
+    "notes": "All 5 columns are documented in the catalog; patient_key, age_band and postcode are marked as PII."
+  },
+  "temporal": {
+    "start": "2019-01-01",
+    "end": null,
+    "open_ended": true,
+    "grain": "event",
+    "refresh_cadence": "daily",
+    "metadata_last_updated": "2026-10-14"
+  },
+  "spatial": {
+    "coverage": [
+      "IT"
+    ],
+    "code_system": "postcode",
+    "notes": "Spatial coverage is Valdena district postcodes only. Single Italian city area."
+  },
+  "ownership": {
+    "owner": "Clinical Records",
+    "steward": "Marta Greco",
+    "publisher": null
+  },
+  "licence": {
+    "name": "internal",
+    "url": null,
+    "commercial_use": "not_applicable",
+    "mixed_sources": false,
+    "attribution_text": null,
+    "agreement_status": "denied",
+    "evidence": "get_catalog_entry('clinic.patient_visits') shows classification='restricted', access.request_process='Data Protection Office approval'; wiki page 'clinic_data_policy' (last_edited 2025-02-01) states 'Patient-level visit records (clinic.patient_visits) may not be used for this analysis.'"
+  },
+  "access": {
+    "method": "warehouse_sql",
+    "auth_required": true,
+    "request_process": "Data Protection Office approval — policy explicitly denies this use case",
+    "reachable": true,
+    "approx_size_bytes": null,
+    "classification": "restricted"
+  },
+  "declared_metadata": {
+    "contains_pii": true,
+    "row_count_approx": 900000,
+    "status": "active",
+    "classification": "restricted"
+  },
+  "documentation_excerpts": [
+    "Catalog description: 'One row per patient visit, with age band, postcode and diagnosis code.'",
+    "Wiki clinic_data_policy (2025-02-01): 'Patient-level visit records (clinic.patient_visits) may not be used for this analysis.'",
+    "Wiki clinic_data_policy (2025-02-01): 'Patient postcode and age band are personal data. They must not leave the clinic systems for analysis.'"
+  ],
+  "quality_notes": [
+    "Data Protection Office policy explicitly prohibits use of this source for the analysis (wiki page 'clinic_data_policy', 2025-02-01).",
+    "Catalog (2026-10-14) and wiki (2025-02-01) are in agreement: access requires DPO approval which is denied for this use case.",
+    "Contains PII (patient_key, age_band, postcode) — cannot leave clinic systems.",
+    "For N5 (patient-level records) this source would have been the logical candidate, but governance blocks it.",
+    "Alternative for N4 (daily district counts): the search found clinic.resp_visits_daily as a permitted source."
+  ],
+  "provenance": [
+    {
+      "claim": "Source is internal with source_id 'clinic.patient_visits', classified as restricted.",
+      "evidence": "get_catalog_entry('clinic.patient_visits') — entry.id, classification"
+    },
+    {
+      "claim": "Contains PII columns: patient_key, age_band, postcode.",
+      "evidence": "get_catalog_entry('clinic.patient_visits') — columns[0,2,3].pii = true"
+    },
+    {
+      "claim": "Temporal coverage starts 2019-01-01 and is open-ended with daily refresh.",
+      "evidence": "get_catalog_entry('clinic.patient_visits') — temporal_coverage.start='2019-01-01', end=null, refresh_cadence='daily'"
+    },
+    {
+      "claim": "Data Protection Office explicitly prohibits use for this analysis.",
+      "evidence": "read_wiki_page('clinic_data_policy') — body: 'Patient-level visit records (clinic.patient_visits) may not be used for this analysis.'"
+    },
+    {
+      "claim": "Access requires DPO approval which policy states will not be granted.",
+      "evidence": "get_catalog_entry('clinic.patient_visits') — access.request_process='Data Protection Office approval'; wiki page denies use"
+    },
+    {
+      "claim": "Approximately 900K rows in the table.",
+      "evidence": "get_catalog_entry('clinic.patient_visits') — row_count_approx=900000"
+    },
+    {
+      "claim": "Steward is Marta Greco, owner is Clinical Records.",
+      "evidence": "get_catalog_entry('clinic.patient_visits') — owner='Clinical Records', steward='Marta Greco'"
+    },
+    {
+      "claim": "An alternative, permitted source (clinic.resp_visits_daily) exists for daily district counts.",
+      "evidence": "search_internal_catalog('clinic_data_policy patient visits') — hit for clinic.resp_visits_daily; wiki page authorises daily counts by district"
+    }
+  ],
+  "unknowns": [
+    "Exact row count (only approximate 900K known)",
+    "Full list of diagnosis codes in use",
+    "Specific clinic locations behind each postcode",
+    "Age band boundaries (described as five-year bands but exact ranges not specified)",
+    "Missing values or completeness rates for any column"
+  ],
+  "canonical_ref": "clinic.patient_visits",
+  "sample_findings": [
+    "No sample taken — internal data contains PII and cannot be copied; also policy blocks use entirely so sampling would be inappropriate."
+  ]
+}

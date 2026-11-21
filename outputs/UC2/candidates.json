@@ -1,0 +1,132 @@
+{
+  "searches_run": [
+    "search_internal_catalog('daily sales by product')",
+    "search_internal_catalog('ice-cream sales')",
+    "search_internal_catalog('Valdena sales export')",
+    "search_internal_catalog('product code mapping 2024')",
+    "search_internal_catalog('daily max temperature Italy')",
+    "search_internal_catalog('Italian public holidays')",
+    "search_internal_catalog('shop opening days store hours calendar')",
+    "search_internal_catalog('local events calendar festival Italy')",
+    "search_internal_catalog('gelato vendite giornaliere prodotto')",
+    "search_internal_catalog('SKU migration product reclassification crosswalk')",
+    "search_internal_catalog('product code change old new crosswalk mapping table')",
+    "search_internal_catalog('Valdena gelato shop location city')",
+    "search_internal_catalog('Valdena')",
+    "search_internal_catalog('store calendar wiki page')",
+    "list_external_register()",
+    "get_catalog_entry('sales.daily_by_product')",
+    "get_catalog_entry('sales.products')",
+    "get_catalog_entry('store.calendar')",
+    "read_wiki_page('product_codes_2024')",
+    "read_wiki_page('till_migration_2024')"
+  ],
+  "unmet_needs": [
+    "N2 — No mapping table exists between old and new product codes. The wiki (product_codes_2024) explicitly states 'No mapping table exists between the old and new codes. Old and new codes can only be matched by product name, and some names are not unique.' The only available source (sales.products) lists current codes only. A partial mapping could be reconstructed by joining old and new sales records by product name where names are unique, but this is uncertain.",
+    "N5 — Partially met by store.calendar (opening days and local events are internal). However, external local events data (municipality festivals, road works, etc.) that the shop might not record is not available in the catalog or register."
+  ],
+  "candidates": [
+    {
+      "source_id": "internal.sales.daily_by_product",
+      "kind": "internal",
+      "title": "Daily sales by product",
+      "location": "azure://valdena-gelato/sales/daily_by_product",
+      "need_ids": [
+        "N1"
+      ],
+      "target_windows": [
+        "history",
+        "recent"
+      ],
+      "why_relevant": "Grain is daily-by-product with units_sold and revenue_eur per product per day, exactly matching N1. Covers 2022-01-01 to present (no end date), so both windows (2023-06-01 to 2025-05-31 and 2025-06-01 to 2026-03-31) are within range. ~310k rows, ~64 products expected. Product code column can join to product list.",
+      "found_via": "search_internal_catalog('daily sales by product')",
+      "suspected_issues": [
+        "Till migration gap 2024-02-05 to 2024-03-10 — no rows exist for those days (wiki: till_migration_2024).",
+        "Product codes changed 2024-04-01 — codes ending in L replaced. Need mapping to track consistently (see N2).",
+        "Codes post-2024-04-01 use new system; codes before use old system — same column but different code schemes."
+      ]
+    },
+    {
+      "source_id": "internal.sales.products",
+      "kind": "internal",
+      "title": "Product list (current codes)",
+      "location": "azure://valdena-gelato/sales/products",
+      "need_ids": [
+        "N2",
+        "N1"
+      ],
+      "target_windows": [
+        "history",
+        "recent"
+      ],
+      "why_relevant": "Provides current product codes, names and categories (64 products). For N2 the wiki says no mapping table exists, but product names could partially bridge old and new codes. For N1 it provides the product catalogue for recent sales.",
+      "found_via": "search_internal_catalog('product code mapping 2024')",
+      "suspected_issues": [
+        "Only lists current (post-2024) product codes — not the old ones.",
+        "Wiki (product_codes_2024) explicitly states: 'No mapping table exists between the old and new codes. Old and new codes can only be matched by product name, and some names are not unique.'",
+        "Last refreshed 2025-03-31, may not reflect newest products."
+      ]
+    },
+    {
+      "source_id": "api.open_meteo_archive",
+      "kind": "public_api",
+      "title": "Open-Meteo Historical Weather API",
+      "location": "https://archive-api.open-meteo.com/v1/archive",
+      "need_ids": [
+        "N3"
+      ],
+      "target_windows": [
+        "history",
+        "recent"
+      ],
+      "why_relevant": "Provides daily maximum temperature (and other variables) globally for any lat/lon from reanalysis data. Registered for UC2 with approved purposes including production. Covers both windows. Must choose a northern Italian city — Verona (45.44, 10.99) is a plausible location; this assumption should be documented.",
+      "found_via": "list_external_register() — register entry api.open_meteo_archive",
+      "suspected_issues": [
+        "Recent days may have a latency of a few days before data is available (reanalysis).",
+        "Free tier query limits — keep probes small.",
+        "Geographic assumption (Verona) needs to be documented and justified.",
+        "Daily maximum temperature variable must be confirmed available in the archive endpoint."
+      ]
+    },
+    {
+      "source_id": "api.nager_public_holidays",
+      "kind": "public_api",
+      "title": "Nager.Date public holidays API",
+      "location": "https://date.nager.at/api/v3/PublicHolidays/{year}/{country}",
+      "need_ids": [
+        "N4"
+      ],
+      "target_windows": [
+        "history",
+        "recent"
+      ],
+      "why_relevant": "Provides public holidays by country and year. Registered for UC2 with approved purposes including production. Italy (ISO 3166-1 alpha-2: IT) is supported. Covers 2023-2026 for both windows.",
+      "found_via": "list_external_register() — register entry api.nager_public_holidays",
+      "suspected_issues": [
+        "May only cover national holidays, not regional/local holidays for the chosen northern Italian region (e.g. Veneto).",
+        "Holidays on weekends may or may not be observed on weekdays — API response includes 'counties' field that may show regional applicability."
+      ]
+    },
+    {
+      "source_id": "internal.store.calendar",
+      "kind": "internal",
+      "title": "Shop calendar (opening days & local events)",
+      "location": "azure://valdena-gelato/store/calendar",
+      "need_ids": [
+        "N5"
+      ],
+      "target_windows": [
+        "history",
+        "recent"
+      ],
+      "why_relevant": "Daily grain with is_open (boolean) and event_name columns. Covers 2022-01-01 to present. Exactly matches N5 for both opening days and local events. ~1500 rows (covers ~4 years daily).",
+      "found_via": "search_internal_catalog('shop opening days store hours calendar')",
+      "suspected_issues": [
+        "Event descriptions may be unstructured/free-text.",
+        "Coverage of local events may be incomplete (self-reported by shop).",
+        "Refresh cadence is weekly — recent changes could be missing."
+      ]
+    }
+  ],
+  "rejected_without_profiling": []
+}

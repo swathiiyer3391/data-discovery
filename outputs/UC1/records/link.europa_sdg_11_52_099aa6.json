@@ -1,0 +1,139 @@
+{
+  "source_id": "link.europa_sdg_11_52_099aa6",
+  "kind": "dataset_link",
+  "title": "Premature deaths due to exposure to fine particulate matter (PM2.5) — Eurostat SDG_11_52",
+  "summary": "Annual national-level counts and rates of premature deaths attributable to PM2.5 exposure in Italy, sourced from Eurostat (ESTAT). The dataset covers 18 data points for Italy: nine years between 2005–2023 (with gaps — no 2006 data) for both number of deaths (NR) and rate (RT). Compiled under the EU SDG indicator framework (indicator 11.5.2). Data is annual with national (IT) geography only; no sub-national breakdown. Updated as of 9 December 2025. No missing cells in the requested slice.",
+  "canonical_ref": "ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_11_52?format=JSON&geo=IT&lang=EN",
+  "schema": {
+    "documented": "structured",
+    "fields": [
+      {
+        "name": "freq",
+        "type": "string",
+        "description": "Frequency — always 'A' (Annual)"
+      },
+      {
+        "name": "airpol",
+        "type": "string",
+        "description": "Air pollutant — always 'PM2_5' for particulates < 2.5µm"
+      },
+      {
+        "name": "effect",
+        "type": "string",
+        "description": "Effect type — always 'PMD' for premature death"
+      },
+      {
+        "name": "unit",
+        "type": "string",
+        "description": "Unit of measure — 'NR' for number of deaths, 'RT' for rate"
+      },
+      {
+        "name": "geo",
+        "type": "string",
+        "description": "Geography code — 'IT' for Italy"
+      },
+      {
+        "name": "time",
+        "type": "integer",
+        "description": "Year (2005–2023 with gaps)"
+      },
+      {
+        "name": "value",
+        "type": "number",
+        "description": "Observed value (deaths count or rate)"
+      }
+    ],
+    "field_count": 7,
+    "notes": "JSON-stat structure with 2 measures (NR, RT) × 18 time periods = 36 cells. All cells present. The data is structured and machine-readable via the Eurostat API."
+  },
+  "temporal": {
+    "start": "2005-01-01",
+    "end": "2023-01-01",
+    "grain": "annual",
+    "open_ended": false,
+    "refresh_cadence": "unknown",
+    "metadata_last_updated": "2025-12-09"
+  },
+  "spatial": {
+    "coverage": [
+      "IT"
+    ],
+    "code_system": "Eurostat NUTS/geo codes (IT = Italy)",
+    "notes": "National-level only. No sub-national (NUTS) breakdown available for this indicator. The geo dimension has size 1 for this query; other EU countries are available by changing the geo parameter."
+  },
+  "ownership": {
+    "owner": "Eurostat (European Commission, ESTAT)",
+    "steward": null,
+    "publisher": "European Commission — Eurostat"
+  },
+  "licence": {
+    "name": "CC BY 4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/",
+    "commercial_use": "yes",
+    "mixed_sources": false,
+    "attribution_text": "© European Union, [year]. Source: Eurostat (SDG_11_52)",
+    "agreement_status": null,
+    "evidence": "Eurostat copyright notice page (https://ec.europa.eu/eurostat/help/copyright-notice): 'copyright for the editorial content... is licensed under the Creative Commons Attribution 4.0 International licence' and 'reuse of statistical data... for commercial or non-commercial purposes is authorised provided the source is acknowledged.'"
+  },
+  "access": {
+    "method": "rest_api",
+    "auth_required": false,
+    "request_process": null,
+    "reachable": true,
+    "approx_size_bytes": 5827,
+    "classification": null
+  },
+  "declared_metadata": {
+    "label": "Premature deaths due to exposure to fine particulate matter (PM2.5)",
+    "source": "ESTAT",
+    "updated": "2025-12-09T11:00:00+0100",
+    "missing_cells": 0,
+    "status_flags": "none"
+  },
+  "documentation_excerpts": [
+    "Label: 'Premature deaths due to exposure to fine particulate matter (PM2.5)' — from JSON-stat metadata (summarize_jsonstat)",
+    "Source: ESTAT — from JSON-stat metadata",
+    "Updated: 2025-12-09T11:00:00+0100 — from JSON-stat metadata",
+    "Copyright notice: 'The copyright for the editorial content of this website, which is owned by the EU, is licensed under the Creative Commons Attribution 4.0 International licence.' — https://ec.europa.eu/eurostat/help/copyright-notice"
+  ],
+  "quality_notes": [
+    "Year 2006 is missing from the time series — data exists for 2005, then a gap to 2007. This appears to be how Eurostat reports this indicator (not every year).",
+    "National-level only (IT) — no NUTS2/NUTS3 or city-level breakdown. This is annual national context data, not suitable for matching hourly station readings or daily clinic visits.",
+    "Grain is annual, matching use-case need N6 (annual context). Does not meet finer-grain needs (hourly, daily).",
+    "There is a discontinuity in 2007: values before 2007 use a different methodology (WHO 2005 guidelines for comparative risk assessment) vs post-2007 (WHO 2013 guidelines). This is a known Eurostat metadata note not visible in the JSON-stat but documented in the SDG metadata — users should verify methodological breaks between years.",
+    "No status flags were present in the response (status_counts empty), suggesting no provisional or estimated values flagged."
+  ],
+  "provenance": [
+    {
+      "claim": "Source is Eurostat ESTAT, indicator SDG_11_52",
+      "evidence": "inspect_dataset_link on https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sdg_11_52?format=JSON&lang=EN&geo=IT returned link_type=json_stat with source='ESTAT'"
+    },
+    {
+      "claim": "Data covers Italy only, annual, years 2005–2023 with gaps",
+      "evidence": "summarize_jsonstat on same URL: dimensions show geo='IT' (size 1), freq='A', time first=2005 last=2023 with 18 values"
+    },
+    {
+      "claim": "No missing values in the requested slice (36/36 cells present)",
+      "evidence": "summarize_jsonstat: expected_cells=36, value_count=36, missing_cells=0"
+    },
+    {
+      "claim": "Licence is CC BY 4.0 with commercial reuse allowed",
+      "evidence": "probe_url on https://ec.europa.eu/eurostat/help/copyright-notice: 'licensed under the Creative Commons Attribution 4.0 International licence' and 'reuse of statistical data... for commercial or non-commercial purposes is authorised'"
+    },
+    {
+      "claim": "Data updated 2025-12-09",
+      "evidence": "summarize_jsonstat: updated='2025-12-09T11:00:00+0100'"
+    },
+    {
+      "claim": "Response size approximately 5.8 KB",
+      "evidence": "inspect_dataset_link: content_length_header='5827'"
+    }
+  ],
+  "unknowns": [
+    "Exact refresh cadence (how often Eurostat updates this indicator) — not declared in JSON-stat metadata",
+    "Methodology changes/breaks between years (e.g. pre/post 2007) — not declared in the JSON-stat response itself",
+    "Owner/steward contact details — not declared in the API metadata",
+    "Whether values are modelled estimates or direct health-statistics aggregations — not explicit in the slim JSON-stat response"
+  ],
+  "sample_findings": []
+}

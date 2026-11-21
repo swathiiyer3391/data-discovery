@@ -1,0 +1,46 @@
+{
+  "reviewer": "Swathi Iyer",
+  "verdict": "proceed_with_conditions",
+  "conditions": [
+    {
+      "text": "Request and confirm access to confidential sales tables internal.sales.daily_by_product and internal.sales.products from Retail Operations (Marco Bianchi).",
+      "owner": "Valdena Gelato Analytics Lead",
+      "due": "2026-11-30"
+    },
+    {
+      "text": "Reconstruct pre/post-2024-04-01 product code mapping from distinct product_code values in internal.sales.daily_by_product, document unmatched ambiguous names, and treat the 2024-02-05 to 2024-03-10 till migration gap as missing data rather than zero sales.",
+      "owner": "Data Scientist & Retail Operations",
+      "due": "2026-12-05"
+    },
+    {
+      "text": "Verify exact GPS coordinates of Valdena Gelato Shop for api.open_meteo_archive queries (replacing assumed Verona coordinates) and include CC BY 4.0 attribution.",
+      "owner": "Data Scientist & Valdena Gelato Owner",
+      "due": "2026-12-02"
+    }
+  ],
+  "agreements": [
+    {
+      "source_id": "internal.sales.daily_by_product",
+      "reason": "Agree with feasible_with_conditions: directly meets N1 daily grain across both windows once Retail Operations grants access, the 34-day till migration gap is treated as missing (not zero), and the 2024-04-01 product code cutover is mapped."
+    },
+    {
+      "source_id": "internal.store.calendar",
+      "reason": "Agree with feasible: open internal table covering 2022-present with is_open and event_name flags, meeting N5 with no blockers."
+    },
+    {
+      "source_id": "api.nager_public_holidays",
+      "reason": "Agree with feasible_with_conditions and dismissal of DQ-METADATA-CONTRADICTION: counties=null is expected for national Italian holidays, though regional Veneto holidays are absent."
+    }
+  ],
+  "overrides": [
+    {
+      "source_id": "api.open_meteo_archive",
+      "reason": "Clarification on coordinate assumption: Verona (45.44, 10.99) was used as a northern Italy proxy because Valdena is fictional; exact shop coordinates must be confirmed with the client before production modeling."
+    }
+  ],
+  "traced_conclusion": {
+    "source_id": "internal.sales.daily_by_product",
+    "record_field": "temporal.start",
+    "could_change_if": "If internal.sales.daily_by_product started after 2023-06-01 (rather than 2022-01-01) or if Retail Operations denies access or confirms that pre-2024-04-01 L-suffixed product codes cannot be reconciled with post-cutover codes, N1/N2 historical modeling would be blocked."
+  }
+}

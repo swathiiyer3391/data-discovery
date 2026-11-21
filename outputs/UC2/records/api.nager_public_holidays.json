@@ -1,0 +1,169 @@
+{
+  "source_id": "api.nager_public_holidays",
+  "kind": "public_api",
+  "title": "Nager.Date public holidays API",
+  "location": "https://date.nager.at/api/v3/PublicHolidays/{year}/{country}",
+  "status": "active",
+  "summary": "Public holidays for Italy (national level) provided by the Nager.Date REST API. Returns a list of public holiday dates, names (English and local), and applicability flags per country and year. For Italy, all 13 holidays per year are national (global=true, counties=null). The API does not provide regional/provincial holidays for Italy (e.g. for Veneto, where Valdena Gelato is located). Covers all years from at least 2023 through 2026 and beyond. Licensed under MIT. Registered for UC2 with approved purposes including production use.",
+  "schema": {
+    "documented": "structured",
+    "fields": [
+      {
+        "name": "date",
+        "type": "date (ISO 8601)",
+        "description": "Date of the holiday",
+        "pii": false
+      },
+      {
+        "name": "localName",
+        "type": "string",
+        "description": "Holiday name in the local language (Italian)",
+        "pii": false
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "description": "Holiday name in English",
+        "pii": false
+      },
+      {
+        "name": "countryCode",
+        "type": "string (ISO 3166-1 alpha-2)",
+        "description": "Country code",
+        "pii": false
+      },
+      {
+        "name": "fixed",
+        "type": "boolean",
+        "description": "Whether the date is fixed (same date every year)",
+        "pii": false
+      },
+      {
+        "name": "global",
+        "type": "boolean",
+        "description": "Whether the holiday applies to the entire country",
+        "pii": false
+      },
+      {
+        "name": "counties",
+        "type": "array|null",
+        "description": "List of applicable county codes if not global (null for Italy)",
+        "pii": false
+      },
+      {
+        "name": "launchYear",
+        "type": "integer|null",
+        "description": "First year the holiday was observed (null for Italy entries)",
+        "pii": false
+      },
+      {
+        "name": "types",
+        "type": "array of strings",
+        "description": "Holiday type categories (e.g. Public)",
+        "pii": false
+      }
+    ],
+    "field_count": 9,
+    "notes": "All fields returned by the /PublicHolidays endpoint. For Italy, all entries have global=true and counties=null, meaning only national-level holidays are supplied. Regional/provincial holidays for northern Italy (e.g. Veneto's Festa del Redentore, local patron saints) are not included."
+  },
+  "temporal": {
+    "start": "2023-01-01",
+    "end": null,
+    "grain": "daily",
+    "open_ended": true,
+    "refresh_cadence": "yearly (data published ahead for future years)",
+    "metadata_last_updated": null
+  },
+  "spatial": {
+    "coverage": [
+      "IT"
+    ],
+    "code_system": "ISO 3166-1 alpha-2",
+    "notes": "The API supports >200 countries. For UC2 only Italy (IT) is relevant. All returned Italian holidays have global=true, so only national public holidays are provided. Regional holidays for northern Italy regions (e.g. Veneto) are not represented in the data for Italy."
+  },
+  "ownership": {
+    "owner": "Nager (nager.at)",
+    "steward": "Nager (open source project)",
+    "publisher": "Nager (nager.at)"
+  },
+  "licence": {
+    "name": "MIT",
+    "url": "https://github.com/nager/Nager.Date/blob/main/LICENSE",
+    "commercial_use": "yes",
+    "mixed_sources": false,
+    "attribution_text": null,
+    "agreement_status": "not_required_open_data",
+    "evidence": "GitHub repository (https://github.com/nager/Nager.Date) README states 'MIT license'; raw LICENSE file at https://raw.githubusercontent.com/nager/Nager.Date/main/LICENSE confirms MIT. Register entry agreement_status=not_required_open_data per client policy."
+  },
+  "access": {
+    "method": "rest_api",
+    "auth_required": false,
+    "request_process": null,
+    "reachable": true,
+    "approx_size_bytes": 2500,
+    "classification": null
+  },
+  "declared_metadata": {
+    "has_missing_values": "no",
+    "contains_pii": "no",
+    "api_docs_url": "https://date.nager.at/Api (page on nagerholidays.com not accessible from probe tools)"
+  },
+  "documentation_excerpts": [
+    "GitHub README: 'Easily access public holidays for 200+ countries via .NET, REST API, Docker, or NuGet for online and offline use.'",
+    "GitHub repo tags: MIT license",
+    "Register entry: agreement_status=not_required_open_data, approved_purposes=[prototyping, production]"
+  ],
+  "quality_notes": [
+    "Only national public holidays (global=true) are provided for Italy — all 13 entries per year have global=true and counties=null.",
+    "Regional/provincial holidays (e.g. local patron saint days in Veneto) are NOT included. This may be a gap for use case UC2 if the Valdena Gelato shop is affected by local holidays in addition to national ones.",
+    "The API response includes a 'counties' field for country-level applicability, but for Italy it is always null, supporting that there are no sub-national holidays in the dataset.",
+    "Weekend holidays (e.g. Easter Sunday which varies) are marked with their actual date; the API does not provide 'observed on' (i.e. Mondayised) dates.",
+    "The API documentation at nagerholidays.com could not be accessed (domain not allowlisted), so some detail about regional holiday handling may be missing.",
+    "The API endpoint was probed successfully for years 2023-2026; response size is consistent at ~2.5KB per year for Italy (13 holidays)."
+  ],
+  "provenance": [
+    {
+      "claim": "The API is registered for UC2 with approved purposes including production use",
+      "evidence": "list_external_register() — source id api.nager_public_holidays, agreement_status=not_required_open_data, approved_purposes=[prototyping, production]"
+    },
+    {
+      "claim": "The API returns Italian public holidays with fields: date, localName, name, countryCode, fixed, global, counties, launchYear, types",
+      "evidence": "call_public_api(source_id='api.nager_public_holidays', path_params={year:2023, country:IT}) — status 200, 13 holidays returned, all global=true, counties=null"
+    },
+    {
+      "claim": "All Italian holidays are national (global=true) — no regional holidays are returned for Italy",
+      "evidence": "call_public_api(source_id='api.nager_public_holidays', path_params={year:2023, country:IT}) and probes for 2024, 2025, 2026 show all entries with global=true, counties=null"
+    },
+    {
+      "claim": "The endpoint also covers 2024-2026 with the same structure",
+      "evidence": "call_public_api(source_id='api.nager_public_holidays', path_params={year:2024, country:IT}) and 2025 and 2026 probes all returned status 200, 13-14 holidays per year"
+    },
+    {
+      "claim": "The data is licensed under MIT",
+      "evidence": "probe_url(url='https://github.com/nager/Nager.Date') — README states 'MIT license'; raw LICENSE at https://raw.githubusercontent.com/nager/Nager.Date/main/LICENSE confirms MIT"
+    },
+    {
+      "claim": "Regional holidays ARE supported in the API structure (e.g. for Germany, holidays have global=false and list specific counties)",
+      "evidence": "call_public_api(source_id='api.nager_public_holidays', path_params={year:2023, country:DE}) — 19 holidays returned, some with global=false and counties like DE-BW, DE-BY, DE-ST"
+    }
+  ],
+  "unknowns": [
+    "Whether regional/provincial holidays exist for Italy that the API does not cover (the API may simply not have them mapped for Italy).",
+    "The exact API documentation on nagerholidays.com (domain not allowlisted).",
+    "When the data is updated each year (whether new years are added on Jan 1 or earlier).",
+    "Whether the 'countyCode' query parameter documented for the API actually filters results (probe with countyCode=VE returned same 13 results).",
+    "The precise launchYear for each Italian holiday (all null in responses)."
+  ],
+  "canonical_ref": null,
+  "sample_findings": [
+    "date: ISO date strings (YYYY-MM-DD), all within the requested year",
+    "localName: Italian names (Capodanno, Epifania, Pasqua, etc.)",
+    "name: English names (New Year's Day, Epiphany, Easter Sunday, etc.)",
+    "countryCode: always 'IT' for these probes",
+    "fixed: boolean, all false in probed data",
+    "global: boolean, all true for Italy",
+    "counties: null for all Italian entries",
+    "launchYear: null for all Italian entries",
+    "types: always ['Public'] for all Italian holidays"
+  ]
+}
